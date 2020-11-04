@@ -14,10 +14,19 @@
         </aside>
         <div class="col-sm-8">
             <ul class="nav nav-tabs nav-justified mb-3">
-                <li class="nav-item"><a class="nav-link" href="#">TimeLine</a></li>
+                <li class="nav-item">
+                    <a class="nav-link {{ Request::routeIs('users.show') ? 'active' : '' }}" href="{{ route('users.show', ['user' => $user->id]) }}">
+                        TimeLine
+                        <span class="badge badge-secondary">{{ $user->microposts_count }}</span>
+                    </a>
+                </li>
                 <li class="nav-item"><a class="nav-link" href="#">Followings</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">Followers</a></li>
             </ul>
+            @if (Auth::id() == $user->id)
+                @include('microposts.form')
+            @endif
+            @include('microposts.microposts')
         </div>
     </div>
 @endsection
