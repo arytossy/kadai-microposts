@@ -81,4 +81,11 @@ class User extends Authenticatable
     public function is_following($user_id) {
         return $this->followings()->where('follow_id', $user_id)->exists();
     }
+    
+    public function feed_microposts() {
+        $user_ids = $this->followings()->pluck('users.id')->toArray();
+        $user_ids[] = $this->id;
+        
+        return Micropost::whereIn('user_id', $user_ids);
+    }
 }
