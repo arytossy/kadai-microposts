@@ -4,18 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\User;
-
-class UserFollowController extends Controller
+class FavoritesController extends Controller
 {
     public function store($id) {
-        \Auth::user()->follow($id);
+        \Auth::user()->favorite($id);
         return back();
     }
-    
     public function destroy($id) {
-        \Auth::user()->unfollow($id);
+        \Auth::user()->unfavorite($id);
         return back();
     }
-    
 }
