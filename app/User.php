@@ -41,7 +41,44 @@ class User extends Authenticatable
         return $this->hasMany(Micropost::class);
     }
     
+    public function followings() {
+        return $this->belongsToMany(User::class, 'user_follow', 'user_id', 'follow_id')->withTimestamps();
+    }
+    
+    public function followers() {
+        return $this->belongsToMany(User::class, 'user_follow', 'follow_id', 'user_id')->withTimestamps();
+    }
+    
     public function loadRelationshipCounts() {
-        $this->loadCount('microposts');
+        $this->loadCount(['microposts', 'followings', 'followers']);
+    }
+    
+    public function follow($user_id) {
+        $exist = $this->is_following($user_id);
+        $its_me = $this->id == $user_id;
+        
+        if ($exist || $its_me) {
+            return false;
+        } else {
+            $this->followings()->attach($user_id);
+            return true;
+        }
+    }
+    
+    public function unfollow($user_id) {
+        $exist = $this->is_following($user_id);
+        $its_me = $this->id == $user_id;
+        
+        if ($exist && !$its_me) {
+            $this->followings()->detach($user_id);
+            return true;
+        } else {
+            $this->followings()->attach($user_id);
+            return false;
+        }
+    }
+    
+    public function is_following($user_id) {
+        return $this->followings()->where('follow_id', $user_id)->exists();
     }
 }
